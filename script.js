@@ -1,3 +1,15 @@
+// 🔓 Mobile audio unlock fix
+function unlockAudio(){
+  let test = new SpeechSynthesisUtterance(" ");
+  speechSynthesis.speak(test);
+  document.removeEventListener("touchstart", unlockAudio);
+  document.removeEventListener("click", unlockAudio);
+}
+document.addEventListener("touchstart", unlockAudio);
+document.addEventListener("click", unlockAudio);
+
+
+
 let btn = document.querySelector("#btn");
 let content = document.querySelector("#content");
 let voiceImg = document.querySelector("#voice");
@@ -24,25 +36,34 @@ function speak(text){
   speechSynthesis.speak(utter);
 }
 
-// Wish
-window.onload = ()=>{
-  let h = new Date().getHours();
+btn.addEventListener("touchstart", ()=>{
+  let h=new Date().getHours();
   if(h<12) speak("Good morning Vinayak");
   else if(h<16) speak("Good afternoon Vinayak");
   else speak("Good evening Vinayak");
-}
+},{once:true});
+
 
 // Speech Recognition
 let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition = new SpeechRecognition();
 recognition.interimResults = false;
 
-// Button click -> Listen once
-btn.addEventListener("click", ()=>{
+function startListening(){
   recognition.start();
   btn.innerText="Listening...";
   voiceImg.style.display="block";
+}
+
+// Laptop
+btn.addEventListener("click", startListening);
+
+// Mobile
+btn.addEventListener("touchstart", (e)=>{
+  e.preventDefault();
+  startListening();
 });
+
 
 // Result
 recognition.onresult = (event)=>{
