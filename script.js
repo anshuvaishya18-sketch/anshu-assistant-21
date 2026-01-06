@@ -1,54 +1,85 @@
-*{
-   margin: 0;
-   padding: 0;
-   box-sizing: border-box;
+let btn = document.querySelector("#btn");
+let content = document.querySelector("#content");
+let voiceImg = document.querySelector("#voice");
+
+let voices = [];
+
+function loadVoices(){
+  voices = speechSynthesis.getVoices();
 }
-body {
-   width: 100vw;
-   height: 100vh;
-   background-color: black;
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   gap: 30px;
-   flex-direction: column;
-}
-#logo {
-   width: 20vw;
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+// Speak
+function speak(text){
+  let utter = new SpeechSynthesisUtterance(text);
+  let female = voices.find(v => v.name.toLowerCase().includes("kalpana")) ||
+               voices.find(v => v.lang === "hi-IN");
+  if(female) utter.voice = female;
+
+  utter.lang="hi-IN";
+  utter.rate=0.9;
+  utter.pitch=1.3;
+  utter.volume=1;
+  speechSynthesis.speak(utter);
 }
 
-#name {
-  color: rgb(202, 23, 104);
-  font-size: 45px;
+// Wish
+window.onload = ()=>{
+  let h = new Date().getHours();
+  if(h<12) speak("Good morning Vinayak");
+  else if(h<16) speak("Good afternoon Vinayak");
+  else speak("Good evening Vinayak");
 }
-#va {
-  color: rgb(202, 23, 104);
-  font-size: 45px;
-}
-#voice {
-  width: 200px;
-  display: none;
-}
-#btn {
-  width: 30%;
-  background: linear-gradient(to right,rgb(21, 145, 207),rgb(245, 41, 115));
-  padding: 9px;
-  gap: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  border-radius: 18px;
-  color: rgb(255, 255, 255);
-  box-shadow: 0 0 15px rgb(21,145,207), 0 0 15px rgb(245,41,115);
-  border: none;
-  transition: all 0.5s;
-  cursor: pointer;
-}
-  #btn:hover {
-    box-shadow: 5px 5px 5px rgb(21, 145, 207),5px 5px 5px rgb(245, 41, 115);
-    letter-spacing: 2px;
-}
-h1 {
-  color: aliceblue;
+
+// Speech Recognition
+let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = new SpeechRecognition();
+recognition.interimResults = false;
+
+// Button click -> Listen once
+btn.addEventListener("click", ()=>{
+  recognition.start();
+  btn.innerText="Listening...";
+  voiceImg.style.display="block";
+});
+
+// Result
+recognition.onresult = (event)=>{
+  let transcript = event.results[0][0].transcript;
+  content.innerText = transcript;
+  takeCommand(transcript.toLowerCase());
+  recognition.stop();   // 🔥 auto off
+  btn.innerText="Click to Talk with Me";
+  voiceImg.style.display="none";
+};
+
+function takeCommand(msg){
+  if(msg.includes("hello")) speak("Hello Vinayak");
+  else if(msg.includes("open youtube")){
+    speak("Opening youtube");
+    window.open("https://youtube.com");
+  }
+  else if(msg.includes("time")){
+    let t=new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    speak("Abhi time hai " + t);
+  }
+  else if(msg.includes("open linkedin")){
+    speak("ok sir");
+  window.open(`https://in.linkedin.com/`)
+  }
+  else if(msg.includes("who are you")){
+    speak("I am Mr Vinayak's assistant, he has appointed me, and I can do some general work, how can I help you? ")
+  }
+  else if (msg.includes("can you help me")){
+    speak("ofcourse sir, please tell me")
+  }
+  else if(msg.includes("open google map")){
+    speak("ok sir,openning google map");
+  window.open("https://www.google.co.in/maps")
+  }
+  else{
+    speak("ok sir");
+    window.open(`https://www.google.com/search?q=${msg}`);
+  }
 }
