@@ -76,7 +76,21 @@ recognition.onresult = (event)=>{
 };
 
 function takeCommand(msg){
-  if(msg.includes("hello anshu")) speak("Hello Sir ,how are you");
+  
+  if(waitingReply){
+    
+  if(msg.includes("theek") || msg.includes("acha")){
+    speak("Ye sunkar mujhe bahut khushi hui");
+  }
+  else if(msg.includes("bura") || msg.includes("thak")){
+    speak("Ohh, kya hua? aap mujhe bata sakte ho");
+  }
+  waitingReply = false;
+  return;
+}
+
+  if(msg.includes("hello anshu")){ speak("Hello Sir ,how are you");
+    waitingReplay = true; }
   else if(msg.includes("open youtube")){
     speak("Opening youtube");
     window.open("https://youtube.com");
@@ -85,13 +99,16 @@ function takeCommand(msg){
     let t=new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     speak("Abhi time hai " + t);
   }
-    else if(msg.includes("main theek hun tum batao kaise ho"){
+    else if(msg.includes("main theek hun") || msg.includes("theek hun tum batao kaise ho")){
+
       speak("Main bhi theek hu..or aapka din kaisa gya aaj kaa")
     }
-      else if(msg.includes("mera to theek hi rha " ||"acha raha"){
+      else if(msg.includes("mera to theek hi raha") || msg.includes("acha raha")){
+
         speak("Ye to kaafi achchi baat hai")
       }
-        else if("haa"){
+        else if(msg.includes("haa") || msg.includes("haan")){
+
           speak("Jii..or bataieye aapko kya jaan naa hai ")
         }
   else if(msg.includes("open linkedin")){
