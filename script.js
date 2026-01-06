@@ -136,6 +136,12 @@ if(msg.includes("hello anshu")){
 
           speak("Jii..or bataieye aapko kya jaan naa hai ")
         }
+        else if (msg.includes("Hello")){
+          speak("Hello sir how are you")
+        }
+        else if(msg.includes("Main theek hu")){
+          speak("Nice sir")
+        }
   else if(msg.includes("open linkedin")){
     speak("ok sir");
   window.open(`https://in.linkedin.com/`)
