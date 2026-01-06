@@ -55,7 +55,7 @@ recognition.onresult = (event)=>{
 };
 
 function takeCommand(msg){
-  if(msg.includes("hello")) speak("Hello Vinayak");
+  if(msg.includes("hello anshu")) speak("Hello Sir ,how are you");
   else if(msg.includes("open youtube")){
     speak("Opening youtube");
     window.open("https://youtube.com");
@@ -64,6 +64,15 @@ function takeCommand(msg){
     let t=new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     speak("Abhi time hai " + t);
   }
+    else if(msg.includes("main theek hun tum batao kaise ho"){
+      speak("Main bhi theek hu..or aapka din kaisa gya aaj kaa")
+    }
+      else if(msg.includes("mera to theek hi rha " ||"acha raha"){
+        speak("Ye to kaafi achchi baat hai")
+      }
+        else if("haa"){
+          speak("Jii..or bataieye aapko kya jaan naa hai ")
+        }
   else if(msg.includes("open linkedin")){
     speak("ok sir");
   window.open(`https://in.linkedin.com/`)
