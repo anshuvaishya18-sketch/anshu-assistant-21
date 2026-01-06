@@ -1,166 +1,87 @@
+<script>
 let waitingReply = false;
 let isListening = false;
-
-
-function userStart(){
-  let unlock = new SpeechSynthesisUtterance("Hello, I am ready");
-  speechSynthesis.speak(unlock);
-}
-
-// 🔓 Mobile audio unlock fix
-function unlockAudio(){
-  let test = new SpeechSynthesisUtterance(" ");
-  speechSynthesis.speak(test);
-  document.removeEventListener("touchstart", unlockAudio);
-  document.removeEventListener("click", unlockAudio);
-}
-document.addEventListener("touchstart", unlockAudio);
-document.addEventListener("click", unlockAudio);
-
-
 
 let btn = document.querySelector("#btn");
 let content = document.querySelector("#content");
 let voiceImg = document.querySelector("#voice");
 
-let voices = [];
+let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = new SpeechRecognition();
+recognition.lang = "hi-IN";
 
-function loadVoices(){
-  voices = speechSynthesis.getVoices();
-}
-speechSynthesis.onvoiceschanged = loadVoices;
-loadVoices();
-
-// Speak
+// SPEAK FUNCTION
 function speak(text){
   let utter = new SpeechSynthesisUtterance(text);
-  let female = voices.find(v => v.name.toLowerCase().includes("kalpana")) ||
-               voices.find(v => v.lang === "hi-IN");
-  if(female) utter.voice = female;
-
-  utter.lang="hi-IN";
-  utter.rate=0.9;
-  utter.pitch=1.3;
-  utter.volume=1;
+  utter.lang = "hi-IN";
   speechSynthesis.speak(utter);
 }
 
-btn.addEventListener("touchstart", ()=>{
-  let h=new Date().getHours();
-  if(h<12) speak("Good morning Vinayak");
-  else if(h<16) speak("Good afternoon Vinayak");
-  else speak("Good evening Vinayak");
-},{once:true});
-
-
-// Speech Recognition
-let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition = new SpeechRecognition();
-recognition.interimResults = false;
-
+// START LISTEN
 function startListening(){
   if(isListening) return;
   isListening = true;
   recognition.start();
-  btn.innerText="Listening...";
-  voiceImg.style.display="block";
+  btn.innerText = "Listening...";
+  voiceImg.style.display = "block";
 }
 
-
-// Laptop
+// Button
 btn.addEventListener("click", startListening);
 
-// Mobile
-btn.addEventListener("touchstart", (e)=>{
-  e.preventDefault();
-  startListening();
-});
-
-
-// Result
-recognition.onend = () => {
+// RESULT
+recognition.onresult = function(event){
+  let msg = event.results[0][0].transcript.toLowerCase();
+  content.innerText = msg;
+  recognition.stop();
+  isListening = false;
   btn.innerText = "Click to Talk with Me";
   voiceImg.style.display = "none";
-  isListening = false;
-
-  // 👇 agar assistant reply ka wait kar raha hai
-  if(waitingReply){
-    setTimeout(()=>{
-      startListening();   // 🔥 auto listen again
-    },800);
-  }
+  takeCommand(msg);
 };
+
+// MAIN COMMAND LOGIC
 function takeCommand(msg){
 
-speechSynthesis.cancel();   // 🔥 overlapping fix
-
-
-if(waitingReply){
-  if(msg.includes("theek") || msg.includes("acha")){
-    speak("Ye sunkar mujhe bahut khushi hui");
+  if(waitingReply){
+    if(msg.includes("theek") || msg.includes("acha")){
+      speak("Ye sunkar mujhe bahut khushi hui");
+    }
+    else if(msg.includes("bura") || msg.includes("thak")){
+      speak("Ohh, kya hua? aap mujhe bata sakte ho");
+    }
+    waitingReply = false;
+    return;
   }
-  else if(msg.includes("bura") || msg.includes("thak")){
-    speak("Ohh, kya hua? aap mujhe bata sakte ho");
+
+  if(msg.includes("hello anshu")){
+    speak("Hello sir, how are you?");
+    waitingReply = true;
+    return;
   }
-  waitingReply = false;
-  return;
-}
-
-if(msg.includes("hello anshu")){
-  speak("Hello Sir, how are you?");
-  waitingReply = true;
-
-  setTimeout(()=>{
-    startListening();     // 🔥 user ka reply sunne ke liye
-  },1500);
-  return;
-}
 
   else if(msg.includes("open youtube")){
     speak("Opening youtube");
-    window.open("https://youtube.com");
+    window.open("https://youtube.com","_blank");
   }
+
   else if(msg.includes("time")){
-    let t=new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    let t = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     speak("Abhi time hai " + t);
   }
-    else if(msg.includes("main theek hun") || msg.includes("theek hun tum batao kaise ho")){
 
-      speak("Main bhi theek hu..or aapka din kaisa gya aaj kaa")
-    }
-      else if(msg.includes("mera to theek hi raha") || msg.includes("acha raha")){
-
-        speak("Ye to kaafi achchi baat hai")
-      }
-        else if(msg.includes("haa") || msg.includes("haan")){
-
-          speak("Jii..or bataieye aapko kya jaan naa hai ")
-        }
   else if(msg.includes("open linkedin")){
-    speak("ok sir");
-  window.open(`https://in.linkedin.com/`)
+    speak("Opening linkedin");
+    window.open("https://in.linkedin.com/","_blank");
   }
-    else if(msg.includes("Vinayak") || msg.includes("Vinayak Gupta kon hai ") || msg.includes("achacha yaar ye vinayak kon hai ?")){
-      speak("Aahh he is my sir, Vinayak has made me ... ")
-    }
-      else if(msg.includes("achcha")){
-        speak(" Yes , you kanow,I am very Smart")
-      }
-        else if(msg.includes("Oohh achacha")|| msg.includes("aisa hai kya ")){
-          speak("Yes i am not Dangerous Bro , you are my friend")
-        }
+
   else if(msg.includes("who are you")){
-    speak("I am Mr Vinayak's assistant, he has appointed me, and I can do some general work, how can I help you? ")
+    speak("I am your personal voice assistant");
   }
-  else if (msg.includes("can you help me")){
-    speak("ofcourse sir, please tell me")
-  }
-  else if(msg.includes("open google map")){
-    speak("ok sir,openning google map");
-  window.open("https://www.google.co.in/maps")
-  }
+
   else{
-    speak("ok sir");
-    window.open(`https://www.google.com/search?q=${msg}`);
+    speak("Searching on google");
+    window.open(`https://www.google.com/search?q=${msg}`,"_blank");
   }
 }
+</script>
