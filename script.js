@@ -1,3 +1,7 @@
+let waitingReply = false;
+let isListening = false;
+
+
 function userStart(){
   let unlock = new SpeechSynthesisUtterance("Hello, I am ready");
   speechSynthesis.speak(unlock);
@@ -55,10 +59,13 @@ let recognition = new SpeechRecognition();
 recognition.interimResults = false;
 
 function startListening(){
+  if(isListening) return;
+  isListening = true;
   recognition.start();
   btn.innerText="Listening...";
   voiceImg.style.display="block";
 }
+
 
 // Laptop
 btn.addEventListener("click", startListening);
@@ -78,12 +85,13 @@ recognition.onresult = (event)=>{
   recognition.stop();   // 🔥 auto off
   btn.innerText="Click to Talk with Me";
   voiceImg.style.display="none";
+  isListening = false;
+
 };
 
 function takeCommand(msg){
   
-  if(waitingReply){
-    
+if(waitingReply){
   if(msg.includes("theek") || msg.includes("acha")){
     speak("Ye sunkar mujhe bahut khushi hui");
   }
@@ -95,7 +103,9 @@ function takeCommand(msg){
 }
 
   if(msg.includes("hello anshu")){ speak("Hello Sir ,how are you");
-    waitingReplay = true; }
+    waitingReply = true; 
+  return;
+  }
   else if(msg.includes("open youtube")){
     speak("Opening youtube");
     window.open("https://youtube.com");
@@ -123,7 +133,7 @@ function takeCommand(msg){
     else if(msg.includes("Vinayak") || msg.includes("Vinayak Gupta kon hai ") || msg.includes("achacha yaar ye vinayak kon hai ?")){
       speak("Aahh he is my sir, Vinayak has made me ... ")
     }
-      else if(msg.include("Achcha")){
+      else if(msg.includes("achcha")){
         speak(" Yes , you kanow,I am very Smart")
       }
         else if(msg.includes("Oohh achacha")|| msg.includes("aisa hai kya ")){
