@@ -78,19 +78,23 @@ btn.addEventListener("touchstart", (e)=>{
 
 
 // Result
-recognition.onresult = (event)=>{
-  let transcript = event.results[0][0].transcript;
-  content.innerText = transcript;
-  takeCommand(transcript.toLowerCase());
-  recognition.stop();   // 🔥 auto off
-  btn.innerText="Click to Talk with Me";
-  voiceImg.style.display="none";
+recognition.onend = () => {
+  btn.innerText = "Click to Talk with Me";
+  voiceImg.style.display = "none";
   isListening = false;
 
+  // 👇 agar assistant reply ka wait kar raha hai
+  if(waitingReply){
+    setTimeout(()=>{
+      startListening();   // 🔥 auto listen again
+    },800);
+  }
 };
-
 function takeCommand(msg){
-  
+
+speechSynthesis.cancel();   // 🔥 overlapping fix
+
+
 if(waitingReply){
   if(msg.includes("theek") || msg.includes("acha")){
     speak("Ye sunkar mujhe bahut khushi hui");
@@ -102,10 +106,16 @@ if(waitingReply){
   return;
 }
 
-  if(msg.includes("hello anshu")){ speak("Hello Sir ,how are you");
-    waitingReply = true; 
+if(msg.includes("hello anshu")){
+  speak("Hello Sir, how are you?");
+  waitingReply = true;
+
+  setTimeout(()=>{
+    startListening();     // 🔥 user ka reply sunne ke liye
+  },1500);
   return;
-  }
+}
+
   else if(msg.includes("open youtube")){
     speak("Opening youtube");
     window.open("https://youtube.com");
