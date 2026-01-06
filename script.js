@@ -1,3 +1,8 @@
+function userStart(){
+  let unlock = new SpeechSynthesisUtterance("Hello, I am ready");
+  speechSynthesis.speak(unlock);
+}
+
 // 🔓 Mobile audio unlock fix
 function unlockAudio(){
   let test = new SpeechSynthesisUtterance(" ");
@@ -115,6 +120,15 @@ function takeCommand(msg){
     speak("ok sir");
   window.open(`https://in.linkedin.com/`)
   }
+    else if(msg.includes("Vinayak") || msg.includes("Vinayak Gupta kon hai ") || msg.includes("achacha yaar ye vinayak kon hai ?")){
+      speak("Aahh he is my sir, Vinayak has made me ... ")
+    }
+      else if(msg.include("Achcha")){
+        speak(" Yes , you kanow,I am very Smart")
+      }
+        else if(msg.includes("Oohh achacha")|| msg.includes("aisa hai kya ")){
+          speak("Yes i am not Dangerous Bro , you are my friend")
+        }
   else if(msg.includes("who are you")){
     speak("I am Mr Vinayak's assistant, he has appointed me, and I can do some general work, how can I help you? ")
   }
